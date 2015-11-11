@@ -1,4 +1,4 @@
-var gps = angular.module("gps", ['ngGeolocation']);
+var gps = angular.module("gps", []);
 
 gps.controller("gpsCtrl",  ['$scope', '$window', function($scope, $window) {
 	// $scope.$geolocation = $geolocation
@@ -6,16 +6,23 @@ gps.controller("gpsCtrl",  ['$scope', '$window', function($scope, $window) {
     $scope.init = function() {
 	    $scope.name = "Boris";
     	$scope.watchID = null;
+    	$scope.getCurrentPosition();
     	$scope.options = { maximumAge : 500, timeout: 30000, enableHighAccuracy: true, frequency: 1 };
     	$scope.launchTracker();
     }
 
-    $scope.launchTracker = function() {
-     //    $geolocation.watchPosition($scope.options).then(function(location) {
-		   //  $scope.location = location;
-	    // });
+	$scope.getCurrentPosition = function() {
+		$window.navigator.geolocation.getCurrentPosition(function(position) {
+			$scope = getScope('gps');
 
-         $scope.watchID = $window.navigator.geolocation.watchPosition(
+            $scope.initLongitude = position.coords.longitude;
+			$scope.initLatitude  = position.coords.latitude;
+		});
+
+	}
+
+    $scope.launchTracker = function() {
+        $scope.watchID = $window.navigator.geolocation.watchPosition(
 			            function(position) {
 			            	$scope = getScope('gps');
 
@@ -25,15 +32,8 @@ gps.controller("gpsCtrl",  ['$scope', '$window', function($scope, $window) {
 							$scope.timestamp  = position.timestamp;
 
 							$scope.$apply();
-							// $scope.vitesse   = position.coords.speed;
-							// $scope.timer     = position.timestamp;
 			            },
 			            function(error) {
 			            }, $scope.options);
-
-        // $scope.onSuccess();
-    	// $scope.longitude = $geolocation.position.coords.longitude;
-    	// $scope.longitude = "bouh";
-    	// $scope.latitude  = $geolocation.position.coords;
     }
 }]);
