@@ -1,4 +1,5 @@
 var gps = angular.module("gps", []);
+// var tabPoint = new array();
 
 gps.controller("gpsCtrl",  ['$scope', '$window', '$interval', function($scope, $window, $interval) {
 
@@ -9,21 +10,32 @@ gps.controller("gpsCtrl",  ['$scope', '$window', '$interval', function($scope, $
         $scope.second = 0;
         $scope.minute = 0;
         $scope.canStart = true;
-      // $scope.getCurrentPosition();
-      // $scope.launchTracker();
+        $scope.finish = false;
+        $scope.getCurrentPosition();
     }
 
     $scope.startChrono = function() {
         $scope.options = { maximumAge : 500, timeout: 30000, enableHighAccuracy: true};
         $scope.launchTracker();
-        $scope.getCurrentPosition();
         $scope.startTimer();
         $scope.canStart = false;
+        $scope.finish = false;
+        $scope.tabPoint = [];
     }
 
     $scope.stopChrono = function() {
         $window.navigator.geolocation.clearWatch($scope.watchID);
         $scope.watchID = null;
+        $scope.finish = true;
+        $scope.initMap();
+
+        $scope.markers = [];
+	    $scope.infoWindow = new google.maps.InfoWindow();
+	    $scope.bounds = new google.maps.LatLngBounds();
+        for (i = 0; i < $scope.tabPoint.length; i++){
+	        $scope.createMarker($scope.tabPoint[i]);
+	    }
+	    $scope.map.fitBounds($scope.bounds);
 
         if (angular.isDefined($scope.timer)) {
             $interval.cancel($scope.timer);
@@ -86,8 +98,33 @@ gps.controller("gpsCtrl",  ['$scope', '$window', '$interval', function($scope, $
         $scope.latitude  = position.coords.latitude;
         $scope.speed     = position.coords.speed;
         $scope.timestamp = position.timestamp;
+        $scope.tabPoint.push(position);
         $scope.$apply();
     }
+
+    $scope.initMap = function() {
+    	var mapOptions = {
+    		zoom: 8,
+    		center: new google.maps.LatLng($scope.initLatitude, $scope.initLongitude),
+    		// center: new google.maps.LatLng(46.2070),
+    		mapTypeId: google.maps.MapTypeId.ROAD
+    	}
+
+    	$scope.map = new google.maps.Map(document.getElementById('map'), mapOptions);
+    }
+    
+    $scope.createMarker = function (info){
+        
+        var pos = new google.maps.LatLng(info.coords.latitude, info.coords.longitude);
+        var marker = new google.maps.Marker({
+            map: $scope.map,
+            position: pos,
+            title: 'Point'
+        });
+        marker.content = 'Point';
+        $scope.bounds.extend(pos);
+        $scope.markers.push(marker);
+    }  
 
     $scope.errorWatchPosition = function(position) {
         $scope.errorGps = "No Data";
