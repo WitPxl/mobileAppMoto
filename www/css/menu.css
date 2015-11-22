@@ -1,0 +1,16 @@
+#menuApp {
+    height: 7%;
+    width: 100%;
+    background-color: #EEE;
+    border-top: 1px solid #AAA;
+}
+
+#menuApp li a {
+	color: #555;
+	font-size:1.5em;
+	font-weight: bold;
+}
+
+#menuApp li {
+	padding-top: 1em;
+}

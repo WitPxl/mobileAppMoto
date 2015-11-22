@@ -33,14 +33,15 @@
         <meta name="msapplication-tap-highlight" content="no">
         <meta name="viewport" content="user-scalable=no,initial-scale=1,maximum-scale=1,minimum-scale=1,width=device-width">
         <link rel="stylesheet" type="text/css" href="css/index.css">
+        <link rel="stylesheet" type="text/css" href="css/menu.css">
         <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
 
         <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js"></script>
         <title>APP</title>
     </head>
     <body>
-        <div class="" data-ng-controller="gpsCtrl" data-ng-init="init()">
-            <ul class="list-group">
+        <div class="gpsContainer" data-ng-controller="gpsCtrl" data-ng-init="init()">
+            <!-- <ul class="list-group">
                 <li class="list-group-item">
                     <div class="row">
                         <div class="col-xs-6">
@@ -81,30 +82,39 @@
                         </div>
                     </div>
                 </li>
-            </ul>
+            </ul> -->
 
-            <div class="row">
-                <div class="col-xs-12 text-center">
-                    <!-- <div class="btn-group" role="group"> -->
-                      <button type="button" class="btn btn-success" 
-                                ng-disabled = "!canStart"
-                                ng-click="startChrono()">
-                            Start
-                      </button>
-                      <button type="button" class="btn btn-warning" 
-                                ng-click="reinitData()">
-                            Reset
-                      </button>
-                      <button type="button" class="btn btn-danger" 
-                                ng-disabled = "canStart"
-                                ng-click="stopChrono()">
-                            Stop
-                      </button>
-                    <!-- </div> -->
+            <div class="overrideMapTop">
+                <div class="row chronometre noMarginRight">
+                    <div class="col-xs-12 text-center">
+                        {{ minute }}:{{ second }}:{{ centiSecond }}
+                    </div>
+                </div>
+                <div class="row noMarginRight">
+                    <div class="col-xs-12 text-center btnManagement">
+                        <!-- <div class="btn-group" role="group"> -->
+                          <button type="button" class="btn btn-success btnGps" 
+                                    ng-hide = "!canStart"
+                                    ng-click="startChrono()">
+                                Start
+                          </button>
+                          <button type="button" class="btn btn-warning btnGps" 
+                                    ng-hide = "!isStop"
+                                    ng-click="reinitData()">
+                                Reset
+                          </button>
+                          <button type="button" class="btn btn-danger btnGps" 
+                                    ng-hide = "!finish"
+                                    ng-click="stopChrono()">
+                                Stop
+                          </button>
+                        <!-- </div> -->
+                    </div>
                 </div>
             </div>
+            <div id="map"></div>
+            
 
-            <div>
               <!--   Points : <br />
                     <ul class="list-group">
                         <li class="list-group-item" ng-repeat="(key, value) in tabPoint">
@@ -112,9 +122,36 @@
                         </li>
                     </ul> -->
 
-                <div id="map"></div>
-            </div>
         </div>
+
+        <div id="menuApp">
+            <ul class="nav nav-pills">
+                <div class="row noMarginRight">
+                <li class="col-xs-4 text-center" role="presentation">
+                    <a href="#">
+                        <span class="glyphicon glyphicon-home"></span>
+                        <!-- <br />
+                        Home -->
+                    </a>
+                </li>
+                <li class="col-xs-4 text-center" role="presentation">
+                    <a href="#">
+                        <span class="glyphicon glyphicon-time"></span>
+                        <!-- <br />
+                        Chrono -->
+                    </a>
+                </li>
+                <li class="col-xs-4 text-center" role="presentation">
+                    <a href="#">
+                        <span class="glyphicon glyphicon-user"></span>
+                       <!--  <br />
+                        Profil -->
+                    </a>
+                </li>
+                </div>
+            </ul>
+        </div>
+
         <script type="text/javascript" src="cordova.js"></script>
         <script type="text/javascript" src="js/angular.min.js"></script>
         <script type="text/javascript" src="js/util.js"></script>

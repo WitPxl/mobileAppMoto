@@ -11,6 +11,7 @@ gps.controller("gpsCtrl",  ['$scope', '$window', '$interval', function($scope, $
         $scope.minute = 0;
         $scope.canStart = true;
         $scope.finish = false;
+        $scope.isStop = false;
         $scope.getCurrentPosition();
     }
 
@@ -20,22 +21,32 @@ gps.controller("gpsCtrl",  ['$scope', '$window', '$interval', function($scope, $
         $scope.launchTracker();
         $scope.startTimer();
         $scope.canStart = false;
-        $scope.finish = false;
+        $scope.isStop = false;
+        $scope.finish = true;
         $scope.tabPoint = [];
     }
 
     $scope.stopChrono = function() {
         $window.navigator.geolocation.clearWatch($scope.watchID);
         $scope.watchID = null;
-        $scope.finish = true;
+        $scope.finish = false;
+        $scope.isStop = true;
 
         $scope.markers = [];
-	    $scope.infoWindow = new google.maps.InfoWindow();
 	    $scope.bounds = new google.maps.LatLngBounds();
+	    var arrayLine = [];
         for (i = 0; i < $scope.tabPoint.length; i++){
 	        $scope.createMarker($scope.tabPoint[i]);
+	        arrayLine.push(new google.maps.LatLng($scope.tabPoint[i].coords.latitude, $scope.tabPoint[i].coords.longitude));
 	    }
 	    $scope.map.fitBounds($scope.bounds);
+
+	    var optionsPolyline = {
+	    	map: $scope.map,
+	    	path: arrayLine
+	    }
+
+	    var mapPolyline = new google.maps.Polyline(optionsPolyline);
 
         if (angular.isDefined($scope.timer)) {
             $interval.cancel($scope.timer);
@@ -44,6 +55,7 @@ gps.controller("gpsCtrl",  ['$scope', '$window', '$interval', function($scope, $
     }
 
     $scope.reinitData = function() {
+        $scope.isStop = false;
         $scope.canStart = true;
         $scope.initLongitude = null;
         $scope.initLatitude  = null;
@@ -122,7 +134,8 @@ gps.controller("gpsCtrl",  ['$scope', '$window', '$interval', function($scope, $
         var marker = new google.maps.Marker({
             map: $scope.map,
             position: pos,
-            title: 'Point'
+            title: 'Point',
+            icon: 'img/markerRed.png'
         });
         marker.content = 'Point';
         $scope.bounds.extend(pos);
@@ -133,9 +146,7 @@ gps.controller("gpsCtrl",  ['$scope', '$window', '$interval', function($scope, $
     	for (var i = 0; i < $scope.markers.length; i++) {
     		$scope.markers[i].setMap(null);
     	}
-    	console.log($scope.markers);
     	$scope.markers = [];
-    	console.log($scope.markers);
     }  
 
     $scope.errorWatchPosition = function(position) {
