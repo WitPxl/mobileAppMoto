@@ -16,7 +16,7 @@ gps.controller("gpsCtrl",  ['$scope', '$window', '$interval', function($scope, $
     }
 
     $scope.startChrono = function() {
-        $scope.options = { maximumAge : 500, timeout: 30000, enableHighAccuracy: true};
+        $scope.options = { maximumAge : 5, timeout: 30000, enableHighAccuracy: true};
         // $scope.getCurrentPosition();
         $scope.launchTracker();
         $scope.startTimer();
