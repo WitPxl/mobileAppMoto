@@ -16,6 +16,7 @@ gps.controller("gpsCtrl",  ['$scope', '$window', '$interval', function($scope, $
 
     $scope.startChrono = function() {
         $scope.options = { maximumAge : 500, timeout: 30000, enableHighAccuracy: true};
+        // $scope.getCurrentPosition();
         $scope.launchTracker();
         $scope.startTimer();
         $scope.canStart = false;
@@ -27,7 +28,6 @@ gps.controller("gpsCtrl",  ['$scope', '$window', '$interval', function($scope, $
         $window.navigator.geolocation.clearWatch($scope.watchID);
         $scope.watchID = null;
         $scope.finish = true;
-        $scope.initMap();
 
         $scope.markers = [];
 	    $scope.infoWindow = new google.maps.InfoWindow();
@@ -44,7 +44,6 @@ gps.controller("gpsCtrl",  ['$scope', '$window', '$interval', function($scope, $
     }
 
     $scope.reinitData = function() {
-        $scope.stopChrono();
         $scope.canStart = true;
         $scope.initLongitude = null;
         $scope.initLatitude  = null;
@@ -56,6 +55,9 @@ gps.controller("gpsCtrl",  ['$scope', '$window', '$interval', function($scope, $
         $scope.centiSecond = 0;
         $scope.second = 0;
         $scope.minute = 0;
+        $scope.finish = false;
+        $scope.clearAllMarkers();
+        $scope.getCurrentPosition();
     }
 
     $scope.startTimer = function() {
@@ -84,6 +86,8 @@ gps.controller("gpsCtrl",  ['$scope', '$window', '$interval', function($scope, $
         $scope.initLongitude = position.coords.longitude;
         $scope.initLatitude  = position.coords.latitude;
         $scope.$apply();
+
+        $scope.initMap();
     }
 
     $scope.launchTracker = function() {
@@ -103,18 +107,17 @@ gps.controller("gpsCtrl",  ['$scope', '$window', '$interval', function($scope, $
     }
 
     $scope.initMap = function() {
+        var pos = new google.maps.LatLng($scope.initLatitude, $scope.initLongitude);
     	var mapOptions = {
-    		zoom: 8,
-    		center: new google.maps.LatLng($scope.initLatitude, $scope.initLongitude),
-    		// center: new google.maps.LatLng(46.2070),
-    		mapTypeId: google.maps.MapTypeId.ROAD
+    		zoom: 12,
+    		center: pos,
+    		mapTypeId: google.maps.MapTypeId.ROADMAP
     	}
 
     	$scope.map = new google.maps.Map(document.getElementById('map'), mapOptions);
     }
     
-    $scope.createMarker = function (info){
-        
+    $scope.createMarker = function (info) {
         var pos = new google.maps.LatLng(info.coords.latitude, info.coords.longitude);
         var marker = new google.maps.Marker({
             map: $scope.map,
@@ -124,6 +127,15 @@ gps.controller("gpsCtrl",  ['$scope', '$window', '$interval', function($scope, $
         marker.content = 'Point';
         $scope.bounds.extend(pos);
         $scope.markers.push(marker);
+    }
+
+    $scope.clearAllMarkers = function() {
+    	for (var i = 0; i < $scope.markers.length; i++) {
+    		$scope.markers[i].setMap(null);
+    	}
+    	console.log($scope.markers);
+    	$scope.markers = [];
+    	console.log($scope.markers);
     }  
 
     $scope.errorWatchPosition = function(position) {
